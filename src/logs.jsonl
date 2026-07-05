@@ -1,0 +1,5 @@
+{"method":"GET","path":"/books","status":200,"duration":120}
+{"method":"GET","path":"/books/1","status":200,"duration":80}
+{"method":"POST","path":"/books","status":201,"duration":300}
+{"method":"GET","path":"/books/2","status":500,"duration":900}
+{"method":"DELETE","path":"/books/1","status":204,"duration":150}
