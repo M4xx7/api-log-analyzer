@@ -1,19 +1,17 @@
-import { analyzeLogs } from "./analyzer";
+import { processLogs } from "./analyzer";
 import { parseLogs } from "./parser";
+import { printReport } from "./reporter";
 
 
 const file = process.argv[2];
 
 if (!file) {
-    console.log("Usage: ts-node index.ts <log-file>");
-    process.exit(1);
+  console.log("Usage: ts-node index.ts <log-file>");
+  process.exit(1);
 }
 
 const logs = parseLogs(file);
-const result = analyzeLogs(logs); 
+const results = processLogs(logs);
 
-console.log("\nAPI Usage Report\n");
+printReport(results);
 
-for (const [endpoint, count] of result.entries()) {
-  console.log(`${endpoint} → ${count} calls`);
-}
