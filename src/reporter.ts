@@ -1,6 +1,5 @@
 import { EndpointResult } from "./types";
 
-// ANSI Color Codes for terminal styling
 const colors = {
     reset: "\x1b[0m",
     cyan: "\x1b[36m",
@@ -13,23 +12,21 @@ const colors = {
 export function printReport(results: EndpointResult[]) {
     console.log(`\n${colors.cyan}API Log Analysis Report${colors.reset}\n`);
 
-    // 1. Find the longest route string so we can align the columns perfectly
     const maxRouteLength = Math.max(...results.map(r => r.route.length), 10);
 
-    // 2. Print Header
     console.log(
         "METHOD".padEnd(8) +
         "ROUTE".padEnd(maxRouteLength + 4) +
         "REQS".padEnd(8) +
-        "ERRORS".padEnd(10) +
-        "AVG(ms)".padEnd(10) +
-        "MIN/MAX(ms)"
+        "SUCCESS %".padEnd(14) +
+        "MEDIAN".padEnd(10) +
+        "p95".padEnd(10) +
+        "MAX".padEnd(10) +
+        "STATUS CODES"
     );
-    console.log(colors.dim + "-".repeat(maxRouteLength + 55) + colors.reset);
+    console.log(colors.dim + "-".repeat(maxRouteLength + 80) + colors.reset);
 
-    // 3. Print Rows
     for (const stat of results) {
-        // Color code methods
         let methodColor = colors.green;
         if (stat.method === "POST" || stat.method === "PUT") methodColor = colors.yellow;
         if (stat.method === "DELETE") methodColor = colors.red;
@@ -38,16 +35,33 @@ export function printReport(results: EndpointResult[]) {
         const routeStr = stat.route.padEnd(maxRouteLength + 4);
         const reqStr = stat.requestCount.toString().padEnd(8);
         
-        // Highlight errors in red if they exist
-        const errorStrRaw = `${stat.errorRate.toFixed(1)}%`;
-        const errorStr = stat.errorRate > 0 
-            ? `${colors.red}${errorStrRaw.padEnd(10)}${colors.reset}` 
-            : errorStrRaw.padEnd(10);
+        let successColor = colors.green;
+        if (stat.successRate < 90) successColor = colors.red;
+        else if (stat.successRate < 100) successColor = colors.yellow;
 
-        const avgStr = Math.round(stat.duration.average).toString().padEnd(10);
-        const minMaxStr = `${colors.dim}${stat.duration.min} / ${stat.duration.max}${colors.reset}`;
+        const successStrRaw = `${stat.successRate.toFixed(1)}%`;
+        const successStr = `${successColor}${successStrRaw.padEnd(14)}${colors.reset}`;
 
-        console.log(`${methodStr}${routeStr}${reqStr}${errorStr}${avgStr}${minMaxStr}`);
+        const medianStr = `${Math.round(stat.latency.median)}ms`.padEnd(10);
+        const p95Str = `${Math.round(stat.latency.p95)}ms`.padEnd(10);
+        
+        const maxRaw = `${Math.round(stat.latency.max)}ms`;
+        const maxStr = `${colors.dim}${maxRaw.padEnd(10)}${colors.reset}`;
+
+        const statusCodesFormatted = Array.from(stat.statusCode.entries())
+            .map(([code, count]) => {
+                let codeColor = colors.reset;
+                if (code >= 200 && code < 300) codeColor = colors.green;
+                else if (code >= 400 && code < 500) codeColor = colors.yellow;
+                else if (code >= 500) codeColor = colors.red;
+                
+                return `${codeColor}${code}${colors.dim}:${count}${colors.reset}`;
+            })
+            .join(", ");
+
+        const statusCodeStr = `[ ${statusCodesFormatted} ]`;
+
+        console.log(`${methodStr}${routeStr}${reqStr}${successStr}${medianStr}${p95Str}${maxStr}${statusCodeStr}`);
     }
     console.log("\n");
 }

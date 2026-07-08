@@ -5,18 +5,19 @@ export type ApiLog = {
     duration: number;
 }
 
-export type Duration = {
-    min: number;
+export type Latency = {
     max: number;
-    average: number
+    median: number;
+    p95: number;
 }
 
 export type EndpointResult = {
     method: string;
     route: string;
     requestCount: number;
-    errorRate: number
-    duration: Duration;
+    successRate: number;
+    statusCode: Map<number, number>;
+    latency: Latency;
 }
 
 

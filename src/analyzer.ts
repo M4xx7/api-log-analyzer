@@ -1,21 +1,28 @@
 import { stat } from "fs";
-import { ApiLog, Duration, EndpointResult } from "./types";
-import { count } from "console";
+import { ApiLog, EndpointResult, Latency } from "./types";
+import { userInfo } from "os";
 
 
 // TODO 
+
+
+// 4 - html report:
+
+// - start with summary table?
+// - top requested endpoints (bar chart)
+// - less successful endpoints (bar chart as well?)
+// - latency chart - maybe horizonatll bar with 3 metrics along it
+// status code distribution for each endpoint
+
+
+
+// DONE
 
 // 1 - Instead of having avg or min max time add median or even p90, p95 and so on
 
 // 2 - replace error rate with success rate
 
-// 3 - Add distribution of status codes
-
-// 4 - show some table of slowest, least successfull or most requested endpoints
-
-// 5 - add nice output in a form of html
-
-
+// 3 - Add status codes
 
 
 export function processLogs(logs: ApiLog[]): EndpointResult[] {
@@ -25,9 +32,8 @@ export function processLogs(logs: ApiLog[]): EndpointResult[] {
         route: string;
         count: number;
         errorCount: number;
-        minDuration: number;
-        maxDuration: number;
-        totalDuration: number;
+        statusCode: Record<number, number>;
+        durations: number[];
     }
 
     const statsMap = new Map<string, Accumulator>();
@@ -42,18 +48,19 @@ export function processLogs(logs: ApiLog[]): EndpointResult[] {
                 route: normalizedPath,
                 count: 0,
                 errorCount: 0,
-                minDuration: Infinity,
-                maxDuration: -Infinity,
-                totalDuration: 0
+                statusCode: {},
+                durations: []
             });
         }
 
         const stat = statsMap.get(key)!;
         stat.count++;
-        stat.totalDuration += log.duration;
 
-        if (log.duration < stat.minDuration) stat.minDuration = log.duration;
-        if (log.duration > stat.maxDuration) stat.maxDuration = log.duration;
+        if (!stat.statusCode[log.status]) {
+            stat.statusCode[log.status] = 0;
+        }
+        stat.statusCode[log.status]++;
+        stat.durations.push(log.duration);
 
         if (isErrorStatus(log.status)) stat.errorCount++;
     }
@@ -65,12 +72,9 @@ export function processLogs(logs: ApiLog[]): EndpointResult[] {
             method: stat.method,
             route: stat.route,
             requestCount: stat.count,
-            errorRate: getErrorRate(stat.count, stat.errorCount),
-            duration: {
-                min: stat.minDuration,
-                max: stat.maxDuration,
-                average: getAverageDuration(stat.totalDuration, stat.count)
-            }
+            successRate: getSuccessRate(stat.count, stat.errorCount),
+            statusCode: getSortedStatusCodes(stat.statusCode),
+            latency: getLatencyMetric(stat.durations)
         })
 
     }
@@ -87,10 +91,38 @@ function isErrorStatus(statusCode: number): boolean {
     return statusCode >= 400;
 }
 
-function getErrorRate(totalCount: number, errorCount: number): number {
-    return totalCount === 0 ? 0 : (errorCount * 100) / totalCount;
+
+function getSuccessRate(totalCount: number, errorCount: number): number {
+    return totalCount === 0 ? 0 : 100 - ((errorCount * 100) / totalCount);
 }
 
-function getAverageDuration(totalDuration: number, requestCount: number): number {
-    return requestCount === 0 ? 0 : totalDuration / requestCount;
+function getSortedStatusCodes(statusCode: Record<number, number>): Map<number, number> {
+    const sortedArray = Object.entries(statusCode).sort(([, countA], [, countB]) => {
+        return countA - countB
+    });
+    return new Map(
+        sortedArray.map(([statusCodeString, count]) => [Number(statusCodeString), count])
+    );
+}
+
+function getLatencyMetric(durations: number[]): Latency {
+
+    const sortedDurations = [...durations].sort((a, b) => a - b);
+    const len = sortedDurations.length;
+
+    if (len === 0) return { max: 0, median: 0, p95: 0 };
+
+    const mid = Math.floor(len / 2);
+    const median = len % 2 !== 0
+        ? sortedDurations[mid]
+        : (sortedDurations[mid - 1] + sortedDurations[mid]) / 2;
+
+    const maxDur = sortedDurations[len - 1];
+    const p95Index = Math.max(0, Math.floor(0.95 * len) - 1);
+
+    return {
+        max: maxDur,
+        median: median,
+        p95: sortedDurations[p95Index]
+    }
 }
