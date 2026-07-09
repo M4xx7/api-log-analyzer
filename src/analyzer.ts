@@ -6,13 +6,6 @@ import { userInfo } from "os";
 // TODO 
 
 
-// 4 - html report:
-
-// - start with summary table?
-// - top requested endpoints (bar chart)
-// - less successful endpoints (bar chart as well?)
-// - latency chart - maybe horizonatll bar with 3 metrics along it
-// status code distribution for each endpoint
 
 
 
@@ -24,6 +17,13 @@ import { userInfo } from "os";
 
 // 3 - Add status codes
 
+// 4 - html report:
+
+// - start with summary table?
+// - top requested endpoints (bar chart)
+// - less successful endpoints (bar chart as well?)
+// - latency chart - maybe horizonatll bar with 3 metrics along it
+// status code distribution for each endpoint
 
 export function processLogs(logs: ApiLog[]): EndpointResult[] {
 

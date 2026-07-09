@@ -1,6 +1,7 @@
 import { processLogs } from "./analyzer";
 import { parseLogs } from "./parser";
-import { printReport } from "./reporter";
+import { generateHtmlReport } from "./reporters/htmlRepoter";
+import * as fs from 'fs';
 
 
 const file = process.argv[2];
@@ -13,5 +14,9 @@ if (!file) {
 const logs = parseLogs(file);
 const results = processLogs(logs);
 
-printReport(results);
+// printReport(results);
+const htmlString = generateHtmlReport(results);
+
+fs.writeFileSync('report.html', htmlString, 'utf-8');
+console.log('report generated successfully!');
 
