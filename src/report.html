@@ -11,65 +11,45 @@
     
     <style>
         
-body {
 
-    font-family: Arial, sans-serif;
+    body {
+        font-family: Arial, sans-serif;
+        background: #0d1117;
+        padding: 2rem;
+        color: #e6edf3;
+    }
 
-    background: #f5f5f5;
+    .report-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        color: #ffffff;
+        font-size: 2rem;
+    }
 
-    padding: 40px;
-}
-
-.summary {
-
-    display: flex;
-
-    gap: 20px;
-
-    margin-top: 30px;
-
-    flex-wrap: wrap;
-}
-
-.card {
-
-    background: white;
-
-    border-radius: 12px;
-
-    padding: 20px;
-
-    width: 180px;
-
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
+    .summary {
+        justify-content: center;
+        display: flex;
+        gap: 5rem;
+        flex-wrap: wrap;
+    }
 
 
+    .stat-value {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-top: 0.75rem;
+        color: #bba8a8;
+    }
 
-.card-title {
-
-    color: gray;
-
-    font-size: 14px;
-}
-
-.card-value {
-
-    font-size: 34px;
-
-    font-weight: bold;
-
-    margin-top: 10px;
-}
-
-.chart{
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-}
-
-
+    .chart {
+        margin-top: 2rem;
+        background: #161b22;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid #30363d;
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,.35);
+    }
 
     </style>
 
@@ -80,25 +60,25 @@ body {
     
         
         <section class="summary-section">
-            <h1>API Usage Report</h1>
+            <h1 class="report-title">API Usage Report</h1>
             
             <div class="summary">
                 
-        <div class="card">
-            <h3>Total Requests</h3>
-            <p class="card-value">125</p>
-        </div>
-    
-                
-        <div class="card">
+        <div class="stat">
             <h3>Endpoints</h3>
-            <p class="card-value">22</p>
+            <p class="stat-value">22</p>
         </div>
     
                 
-        <div class="card">
+        <div class="stat">
             <h3>Average Success</h3>
-            <p class="card-value">92.1%</p>
+            <p class="stat-value">92.1%</p>
+        </div>
+    
+                
+        <div class="stat">
+            <h3>Total Requests</h3>
+            <p class="stat-value">125</p>
         </div>
     
             </div>
@@ -106,238 +86,68 @@ body {
     
         
 <div class="chart">
-    <h2>Top 10 Most Used Endpoints</h2>
+    <h2 style="color: #f3f4f6; margin-bottom: 1rem; text-align: center;">Most Used Endpoints</h2>
     
-    <div style="position: relative; height: 400px; width: 100%;">
+    <div style="position: relative; height: 25rem; width: 100%;">
         <canvas id="topEndpointsChart"></canvas>
     </div>
 
     <script>
         {
-            const labels = ["GET /books/:id","GET /books","GET /health","POST /books","POST /auth/login","POST /cart/items","POST /checkout","GET /authors/:id","GET /cart","GET /authors"];
-            const values = [22,20,10,9,8,8,8,7,6,5];
             const ctx = document.getElementById("topEndpointsChart");
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Requests',
-                        data: values,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
+            new Chart(ctx, {"type":"bar","data":{"labels":["GET /books/:id","GET /books","GET /health","POST /books","POST /auth/login","POST /cart/items","POST /checkout","GET /authors/:id","GET /cart","GET /authors"],"datasets":[{"label":"Total Requests","data":[22,20,10,9,8,8,8,7,6,5],"backgroundColor":"rgba(124, 58, 237, 0.8)","borderColor":"rgba(124, 58, 237, 1)","borderWidth":1,"borderRadius":4}]},"options":{"indexAxis":"y","responsive":true,"maintainAspectRatio":false,"color":"#9ca3af","scales":{"x":{"beginAtZero":true,"grid":{"color":"rgba(255, 255, 255, 0.1)"},"ticks":{"color":"#9ca3af"}},"y":{"grid":{"display":false},"ticks":{"color":"#9ca3af"}}},"plugins":{"legend":{"display":true,"position":"bottom","labels":{"color":"#e0e0e0"}}}}});
         }
     </script>
 </div>
-
+    
         
 <div class="chart">
-    <h2>Top 5 Least Successful</h2>
+    <h2 style="color: #f3f4f6; margin-bottom: 1rem; text-align: center;">Least Successful Endpoints</h2>
     
-    <div style="position: relative; height: 400px; width: 100%;">
+    <div style="position: relative; height: 25rem; width: 100%;">
         <canvas id="leastSuccessfulChart"></canvas>
     </div>
 
     <script>
         {
-            const labels = ["DELETE /books/:id","GET /books/:id","POST /auth/login","PUT /books/:id","POST /checkout"];
-            const values = [60,63.63636363636363,75,75,75];
             const ctx = document.getElementById("leastSuccessfulChart");
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Success Rate',
-                        data: values,
-                        backgroundColor: 'rgba(22, 219, 134, 0.6)',
-                        borderColor: 'rgb(13, 152, 66)',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
+            new Chart(ctx, {"type":"bar","data":{"labels":["DELETE /books/:id","GET /books/:id","POST /auth/login","PUT /books/:id","POST /checkout","POST /books","GET /health","GET /books","GET /authors","GET /authors/:id"],"datasets":[{"label":"Success Rate (%)","data":[60,63.63636363636363,75,75,75,77.77777777777777,100,100,100,100],"backgroundColor":"rgba(244, 63, 94, 0.8)","borderColor":"rgba(244, 63, 94, 1)","borderWidth":1,"borderRadius":4}]},"options":{"indexAxis":"y","responsive":true,"maintainAspectRatio":false,"color":"#9ca3af","scales":{"x":{"beginAtZero":true,"grid":{"color":"rgba(255, 255, 255, 0.1)"},"ticks":{"color":"#9ca3af"}},"y":{"grid":{"display":false},"ticks":{"color":"#9ca3af"}}},"plugins":{"legend":{"display":true,"position":"bottom","labels":{"color":"#e0e0e0"}}}}});
         }
     </script>
 </div>
-
+    
         
 <div class="chart">
-    <h2>Endpoint Latency Spread (Top 10 Worst)</h2>
+    <h2 style="color: #f3f4f6; margin-bottom: 1rem; text-align: center;">Endpoint Latency Spread</h2>
     
-    <div style="position: relative; height: 400px; width: 100%;">
+    <div style="position: relative; height: 25rem; width: 100%;">
         <canvas id="latencyChart"></canvas>
     </div>
 
     <script>
         {
-            const labels = ["POST /checkout","GET /books/:id","GET /search?q=kubernetes","GET /search?q=graphql","GET /search?q=python","GET /search?q=react","GET /search?q=docker","GET /search?q=node","GET /search?q=aws","GET /search?q=typescript"];
-            const medians = [875,82.5,520,510,480,450,440,420,415,405];
-            const p95s = [1480,925,520,510,480,450,440,420,415,405];
-            const maxes = [1520,960,520,510,480,450,440,420,415,405];
             const ctx = document.getElementById("latencyChart");
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Median',
-                            data: medians,
-                            backgroundColor: 'rgb(18, 30, 158)',
-                            pointStyle: 'rectRounded',
-                            pointRadius: 6,
-                            showLine: false
-                        },
-                        {
-                            label: 'P95',
-                            data: p95s,
-                            backgroundColor: 'rgb(83, 255, 146)',
-                            pointStyle: 'rectRounded',
-                            pointRadius: 6,
-                            showLine: false
-                        },
-                        {
-                            label: 'Max',
-                            data: maxes,
-                            backgroundColor: 'rgb(255, 52, 52)',
-                            pointStyle: 'rectRounded', 
-                            pointRadius: 6,
-                            showLine: false
-                        }
-                    ]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Latency (ms)'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom' 
-                        }
-                    }
-                }
-            });
+            new Chart(ctx, {"type":"line","data":{"labels":["POST /checkout","GET /books/:id","GET /search?q=kubernetes","GET /search?q=graphql","GET /search?q=python","GET /search?q=react","GET /search?q=docker","GET /search?q=node","GET /search?q=aws","GET /search?q=typescript"],"datasets":[{"label":"Median","data":[875,82.5,520,510,480,450,440,420,415,405],"backgroundColor":"rgba(56, 189, 248, 0.8)","borderColor":"rgba(56, 189, 248, 1)","pointStyle":"rectRounded","pointRadius":6,"showLine":false},{"label":"P95","data":[1480,925,520,510,480,450,440,420,415,405],"backgroundColor":"rgba(251, 191, 36, 0.8)","borderColor":"rgba(251, 191, 36, 1)","pointStyle":"rectRounded","pointRadius":6,"showLine":false},{"label":"Max","data":[1520,960,520,510,480,450,440,420,415,405],"backgroundColor":"rgba(244, 63, 94, 0.8)","borderColor":"rgba(244, 63, 94, 1)","pointStyle":"rectRounded","pointRadius":6,"showLine":false}]},"options":{"indexAxis":"y","responsive":true,"maintainAspectRatio":false,"color":"#9ca3af","scales":{"x":{"beginAtZero":true,"grid":{"color":"rgba(255, 255, 255, 0.1)"},"ticks":{"color":"#9ca3af"},"title":{"display":true,"text":"Latency (ms)","color":"#9ca3af"}},"y":{"grid":{"display":false},"ticks":{"color":"#9ca3af"}}},"plugins":{"legend":{"display":true,"position":"bottom","labels":{"color":"#e0e0e0"}}}}});
         }
     </script>
 </div>
-
+    
         
 <div class="chart">
-    <h2>Status Code Distribution (Top 10)</h2>
+    <h2 style="color: #f3f4f6; margin-bottom: 1rem; text-align: center;">Status Code Distribution</h2>
     
-    <div style="position: relative; height: 400px; width: 100%;">
+    <div style="position: relative; height: 25rem; width: 100%;">
         <canvas id="statusChart"></canvas>
     </div>
 
     <script>
         {
             const ctx = document.getElementById("statusChart");
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ["GET /books/:id","GET /books","GET /health","POST /books","POST /auth/login","POST /cart/items","POST /checkout","GET /authors/:id","GET /cart","GET /authors"],
-                    datasets: [
-                        {
-                            label: '2xx Success',
-                            data: [14,20,10,7,6,8,6,7,6,5],
-                            backgroundColor: 'rgba(114, 255, 101, 0.8)',
-                        },
-                        {
-                            label: '3xx Redirect',
-                            data: [0,0,0,0,0,0,0,0,0,0],
-                            backgroundColor: 'rgba(54, 162, 235, 0.8)',
-                        },
-                        {
-                            label: '4xx Client Error',
-                            data: [4,0,0,2,2,0,0,0,0,0],
-                            backgroundColor: 'rgba(255, 210, 64, 0.8)',
-                        },
-                        {
-                            label: '5xx Server Error',
-                            data: [4,0,0,0,0,0,2,0,0,0],
-                            backgroundColor: 'rgba(255, 99, 132, 0.8)', 
-                        }
-                    ]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            stacked: true, 
-                            beginAtZero: true
-                        },
-                        y: {
-                            stacked: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false 
-                        }
-                    }
-                }
-            });
+            new Chart(ctx, {"type":"bar","data":{"labels":["GET /books/:id","GET /books","GET /health","POST /books","POST /auth/login","POST /cart/items","POST /checkout","GET /authors/:id","GET /cart","GET /authors"],"datasets":[{"label":"2xx Success","data":[14,20,10,7,6,8,6,7,6,5],"backgroundColor":"rgba(52, 211, 153, 0.8)"},{"label":"3xx Redirect","data":[0,0,0,0,0,0,0,0,0,0],"backgroundColor":"rgba(56, 189, 248, 0.8)"},{"label":"4xx Client Error","data":[4,0,0,2,2,0,0,0,0,0],"backgroundColor":"rgba(251, 191, 36, 0.8)"},{"label":"5xx Server Error","data":[4,0,0,0,0,0,2,0,0,0],"backgroundColor":"rgba(248, 113, 113, 0.8)"}]},"options":{"indexAxis":"y","responsive":true,"maintainAspectRatio":false,"color":"#9ca3af","scales":{"x":{"stacked":true,"grid":{"color":"rgba(255, 255, 255, 0.1)"},"ticks":{"color":"#9ca3af"}},"y":{"stacked":true,"grid":{"color":"rgba(255, 255, 255, 0.1)"},"ticks":{"color":"#9ca3af"}}},"plugins":{"legend":{"display":true,"position":"bottom","labels":{"color":"#e0e0e0"}}}}});
         }
     </script>
 </div>
-
+    
     
 
 </body>

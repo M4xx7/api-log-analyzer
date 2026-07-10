@@ -1,191 +1,117 @@
 import { EndpointResult } from "../../types";
 
-interface BarChartConfig {
-    id: string;
-    title: string;
-    labels: string[];
-    values: number[];
-    datasetLabel: string;
-    backgroundColor: string;
-    borderColor: string;
-}
 
-
-
-export function generateMostUsedEndpoints(results: EndpointResult[]): string {
+export function generateMostUsedEndpoints(results: EndpointResult[], option: number): string {
     const topEndpoints = [...results]
         .sort((a, b) => b.requestCount - a.requestCount)
-        .slice(0, 10);
+        .slice(0, option);
 
-    return generateHorizontalBarChart({
-        id: "topEndpointsChart",
-        title: "Top 10 Most Used Endpoints",
-        labels: topEndpoints.map(e => `${e.method} ${e.route}`),
-        values: topEndpoints.map(e => e.requestCount),
-        datasetLabel: "Total Requests",
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-        borderColor: "rgba(54, 162, 235, 1)"
+    return renderChartHtml("topEndpointsChart", "Most Used Endpoints", {
+        type: 'bar',
+        data: {
+            labels: topEndpoints.map(e => `${e.method} ${e.route}`),
+            datasets: [{
+                label: "Total Requests",
+                data: topEndpoints.map(e => e.requestCount),
+                backgroundColor: "rgba(124, 58, 237, 0.8)", 
+                borderColor: "rgba(124, 58, 237, 1)",
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: getDarkThemeOptions()
     });
 }
 
-export function generateLeastSuccessfulEndpoints(results: EndpointResult[]): string {
+export function generateLeastSuccessfulEndpoints(results: EndpointResult[], option: number): string {
     const bottomEndpoints = [...results]
         .sort((a, b) => a.successRate - b.successRate)
-        .slice(0, 5);
+        .slice(0, option);
 
-    return generateHorizontalBarChart({
-        id: "leastSuccessfulChart",
-        title: "Top 5 Least Successful",
-        labels: bottomEndpoints.map(e => `${e.method} ${e.route}`),
-        values: bottomEndpoints.map(e => e.successRate),
-        datasetLabel: "Success Rate",
-        backgroundColor: "rgba(22, 219, 134, 0.6)",
-        borderColor: "rgb(13, 152, 66)"
+    return renderChartHtml("leastSuccessfulChart", "Least Successful Endpoints", {
+        type: 'bar',
+        data: {
+            labels: bottomEndpoints.map(e => `${e.method} ${e.route}`),
+            datasets: [{
+                label: "Success Rate (%)",
+                data: bottomEndpoints.map(e => e.successRate),
+                backgroundColor: "rgba(244, 63, 94, 0.8)", 
+                borderColor: "rgba(244, 63, 94, 1)",
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: getDarkThemeOptions()
     });
 }
 
-
-export function generateLatencyChart(results: EndpointResult[]): string {
-
+export function generateLatencyChart(results: EndpointResult[], option: number): string {
     const sortedEndpoints = [...results]
         .sort((a, b) => b.latency.max - a.latency.max)
-        .slice(0, 10);
+        .slice(0, option);
 
     const labels = sortedEndpoints.map(e => `${e.method} ${e.route}`);
-    const medians = sortedEndpoints.map(e => e.latency.median);
-    const p95s = sortedEndpoints.map(e => e.latency.p95);
-    const maxes = sortedEndpoints.map(e => e.latency.max);
 
-    return `
-<div class="chart">
-    <h2>Endpoint Latency Spread (Top 10 Worst)</h2>
-    
-    <div style="position: relative; height: 400px; width: 100%;">
-        <canvas id="latencyChart"></canvas>
-    </div>
-
-    <script>
-        {
-            const labels = ${JSON.stringify(labels)};
-            const medians = ${JSON.stringify(medians)};
-            const p95s = ${JSON.stringify(p95s)};
-            const maxes = ${JSON.stringify(maxes)};
-            const ctx = document.getElementById("latencyChart");
-
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Median',
-                            data: medians,
-                            backgroundColor: 'rgb(18, 30, 158)',
-                            pointStyle: 'rectRounded',
-                            pointRadius: 6,
-                            showLine: false
-                        },
-                        {
-                            label: 'P95',
-                            data: p95s,
-                            backgroundColor: 'rgb(83, 255, 146)',
-                            pointStyle: 'rectRounded',
-                            pointRadius: 6,
-                            showLine: false
-                        },
-                        {
-                            label: 'Max',
-                            data: maxes,
-                            backgroundColor: 'rgb(255, 52, 52)',
-                            pointStyle: 'rectRounded', 
-                            pointRadius: 6,
-                            showLine: false
-                        }
-                    ]
+    return renderChartHtml("latencyChart", "Endpoint Latency Spread", {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Median',
+                    data: sortedEndpoints.map(e => e.latency.median),
+                    backgroundColor: 'rgba(56, 189, 248, 0.8)',
+                    borderColor: 'rgba(56, 189, 248, 1)',
+                    pointStyle: 'rectRounded',
+                    pointRadius: 6,
+                    showLine: false 
                 },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Latency (ms)'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom' 
-                        }
-                    }
+                {
+                    label: 'P95',
+                    data: sortedEndpoints.map(e => e.latency.p95),
+                    backgroundColor: 'rgba(251, 191, 36, 0.8)',
+                    borderColor: 'rgba(251, 191, 36, 1)',
+                    pointStyle: 'rectRounded',
+                    pointRadius: 6,
+                    showLine: false
+                },
+                {
+                    label: 'Max',
+                    data: sortedEndpoints.map(e => e.latency.max),
+                    backgroundColor: 'rgba(244, 63, 94, 0.8)', 
+                    borderColor: 'rgba(244, 63, 94, 1)',
+                    pointStyle: 'rectRounded', 
+                    pointRadius: 6,
+                    showLine: false
                 }
-            });
+            ]
+        },
+        options: {
+            ...getDarkThemeOptions(),
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    ticks: { color: '#9ca3af' },
+                    title: {
+                        display: true,
+                        text: 'Latency (ms)',
+                        color: '#9ca3af'
+                    }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { color: '#9ca3af' }
+                }
+            }
         }
-    </script>
-</div>
-`;
+    });
 }
 
-function generateHorizontalBarChart(config: BarChartConfig): string {
-    return `
-<div class="chart">
-    <h2>${config.title}</h2>
-    
-    <div style="position: relative; height: 400px; width: 100%;">
-        <canvas id="${config.id}"></canvas>
-    </div>
-
-    <script>
-        {
-            const labels = ${JSON.stringify(config.labels)};
-            const values = ${JSON.stringify(config.values)};
-            const ctx = document.getElementById("${config.id}");
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: '${config.datasetLabel}',
-                        data: values,
-                        backgroundColor: '${config.backgroundColor}',
-                        borderColor: '${config.borderColor}',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
-    </script>
-</div>
-`;
-}
-
-
-export function generateStatusCodeChart(results: EndpointResult[]): string {
-
+export function generateStatusCodeChart(results: EndpointResult[], option: number): string {
     const sortedEndpoints = [...results]
         .sort((a, b) => b.requestCount - a.requestCount)
-        .slice(0, 10);
+        .slice(0, option);
 
     const labels = sortedEndpoints.map(e => `${e.method} ${e.route}`);
 
@@ -197,79 +123,85 @@ export function generateStatusCodeChart(results: EndpointResult[]): string {
         return count;
     };
 
-    const success2xx = sortedEndpoints.map(e => getCodeCount(e.statusCode, 2));
-    const redirect3xx = sortedEndpoints.map(e => getCodeCount(e.statusCode, 3));
-    const clientErr4xx = sortedEndpoints.map(e => getCodeCount(e.statusCode, 4));
-    const serverErr5xx = sortedEndpoints.map(e => getCodeCount(e.statusCode, 5));
+    return renderChartHtml("statusChart", "Status Code Distribution", {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: '2xx Success',
+                    data: sortedEndpoints.map(e => getCodeCount(e.statusCode, 2)),
+                    backgroundColor: 'rgba(52, 211, 153, 0.8)',
+                },
+                {
+                    label: '3xx Redirect',
+                    data: sortedEndpoints.map(e => getCodeCount(e.statusCode, 3)),
+                    backgroundColor: 'rgba(56, 189, 248, 0.8)', 
+                },
+                {
+                    label: '4xx Client Error',
+                    data: sortedEndpoints.map(e => getCodeCount(e.statusCode, 4)),
+                    backgroundColor: 'rgba(251, 191, 36, 0.8)', 
+                },
+                {
+                    label: '5xx Server Error',
+                    data: sortedEndpoints.map(e => getCodeCount(e.statusCode, 5)),
+                    backgroundColor: 'rgba(248, 113, 113, 0.8)', 
+                }
+            ]
+        },
+        options: {
+            ...getDarkThemeOptions(),
+            scales: {
+                x: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } },
+                y: { stacked: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } }
+            }
+        }
+    });
+}
 
+function renderChartHtml(id: string, title: string, chartConfig: any): string {
     return `
 <div class="chart">
-    <h2>Status Code Distribution (Top 10)</h2>
+    <h2 style="color: #f3f4f6; margin-bottom: 1rem; text-align: center;">${title}</h2>
     
-    <div style="position: relative; height: 400px; width: 100%;">
-        <canvas id="statusChart"></canvas>
+    <div style="position: relative; height: 25rem; width: 100%;">
+        <canvas id="${id}"></canvas>
     </div>
 
     <script>
         {
-            const ctx = document.getElementById("statusChart");
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ${JSON.stringify(labels)},
-                    datasets: [
-                        {
-                            label: '2xx Success',
-                            data: ${JSON.stringify(success2xx)},
-                            backgroundColor: 'rgba(114, 255, 101, 0.8)',
-                        },
-                        {
-                            label: '3xx Redirect',
-                            data: ${JSON.stringify(redirect3xx)},
-                            backgroundColor: 'rgba(54, 162, 235, 0.8)',
-                        },
-                        {
-                            label: '4xx Client Error',
-                            data: ${JSON.stringify(clientErr4xx)},
-                            backgroundColor: 'rgba(255, 210, 64, 0.8)',
-                        },
-                        {
-                            label: '5xx Server Error',
-                            data: ${JSON.stringify(serverErr5xx)},
-                            backgroundColor: 'rgba(255, 99, 132, 0.8)', 
-                        }
-                    ]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            stacked: true, 
-                            beginAtZero: true
-                        },
-                        y: {
-                            stacked: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false 
-                        }
-                    }
-                }
-            });
+            const ctx = document.getElementById("${id}");
+            new Chart(ctx, ${JSON.stringify(chartConfig)});
         }
     </script>
 </div>
-`;
+    `;
 }
 
-
+function getDarkThemeOptions() {
+    return {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        color: '#9ca3af',
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+                ticks: { color: '#9ca3af' } 
+            },
+            y: {
+                grid: { display: false },
+                ticks: { color: '#9ca3af' }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'bottom',
+                labels: { color: '#e0e0e0' }
+            }
+        }
+    };
+}

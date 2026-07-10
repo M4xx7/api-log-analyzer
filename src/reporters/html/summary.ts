@@ -2,12 +2,8 @@ import { EndpointResult } from "../../types";
 
 export function generateSummary(results: EndpointResult[]): string {
 
-    const totalRequests = results.reduce((accumulator, currResult) => {
-        return accumulator + currResult.requestCount;
-    }, 0);
-
     const totalEndpoints = results.length;
-
+    
     const totalSuccessRate = results.reduce((accumulator, currResult) => {
         return accumulator + currResult.successRate;
     }, 0);
@@ -16,25 +12,30 @@ export function generateSummary(results: EndpointResult[]): string {
         ? (totalSuccessRate / totalEndpoints).toFixed(1) + "%"
         : "0%";
 
+    const totalRequests = results.reduce((accumulator, currResult) => {
+        return accumulator + currResult.requestCount;
+    }, 0);
+
+
     return `
         <section class="summary-section">
-            <h1>API Usage Report</h1>
+            <h1 class="report-title">API Usage Report</h1>
             
             <div class="summary">
-                ${generateCard("Total Requests", totalRequests)}
-                ${generateCard("Endpoints", totalEndpoints)}
-                ${generateCard("Average Success", avgSuccessRate)}
+                ${generateStat("Endpoints", totalEndpoints)}
+                ${generateStat("Average Success", avgSuccessRate)}
+                ${generateStat("Total Requests", totalRequests)}
             </div>
         </section>
     `;
 }
 
 
-function generateCard(title: string, value: string | number): string {
+function generateStat(title: string, value: string | number): string {
     return `
-        <div class="card">
+        <div class="stat">
             <h3>${title}</h3>
-            <p class="card-value">${value}</p>
+            <p class="stat-value">${value}</p>
         </div>
     `;
 }
