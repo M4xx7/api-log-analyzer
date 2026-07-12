@@ -1,41 +1,76 @@
 export const styles = `
+:root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e5e5e5;
+    --accent: #b7b7b7;
+}
 
-    body {
-        font-family: Arial, sans-serif;
-        background: #0d1117;
-        padding: 2rem;
-        color: #e6edf3;
-    }
+* {
+    box-sizing: border-box;
+}
 
-    .report-title {
-        text-align: center;
-        margin-bottom: 3rem;
-        color: #ffffff;
-        font-size: 2rem;
-    }
+body {
+    margin: 0;
+    padding: 1.5rem;
+    max-width: 1400px;
+    margin-inline: auto;
+    background: var(--bg);
+    color: var(--text);
 
-    .summary {
-        justify-content: center;
-        display: flex;
-        gap: 5rem;
-        flex-wrap: wrap;
-    }
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+        line-height: 1.5;
+}
 
+.report-title {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 3rem;
+    color: var(--text);
+}
 
-    .stat-value {
-        text-align: center;
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-top: 0.75rem;
-        color: #bba8a8;
-    }
+.summary {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
 
-    .chart {
-        margin-top: 2rem;
-        background: #161b22;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        border: 1px solid #30363d;
-        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,.35);
-    }
+.stat {
+    text-align: center;
+    color: var(--text);
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.stat-value {
+    text-align: center;
+    margin-top: 0.4rem;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.chart {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.chart h2 {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+}
 `;

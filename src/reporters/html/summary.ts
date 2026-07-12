@@ -34,7 +34,7 @@ export function generateSummary(results: EndpointResult[]): string {
 function generateStat(title: string, value: string | number): string {
     return `
         <div class="stat">
-            <h3>${title}</h3>
+            <h3 class="stat">${title}</h3>
             <p class="stat-value">${value}</p>
         </div>
     `;

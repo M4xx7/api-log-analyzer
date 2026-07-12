@@ -8,10 +8,10 @@ export function generateLayout(content: string): string {
 
 <head>
     <meta charset="UTF-8">
-    <title>API Usage Report</title>
+    <title>API Report</title>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+        
     <style>
         ${styles}
     </style>

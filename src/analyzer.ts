@@ -1,7 +1,4 @@
-import { stat } from "fs";
 import { ApiLog, EndpointResult, Latency } from "./types";
-import { userInfo } from "os";
-
 
 
 
@@ -98,7 +95,7 @@ function getLatencyMetric(durations: number[]): Latency {
         : (sortedDurations[mid - 1] + sortedDurations[mid]) / 2;
 
     const maxDur = sortedDurations[len - 1];
-    const p95Index = Math.max(0, Math.floor(0.95 * len) - 1);
+    const p95Index = Math.max(0, Math.ceil(0.95 * len) - 1);
 
     return {
         max: maxDur,

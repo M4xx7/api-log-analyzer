@@ -21,10 +21,9 @@ export type EndpointResult = {
 }
 
 export type Options = {
-    usageTop: number;
+    statusDistributionTop: number;
     leastSuccessfulTop: number;
     latencyTop: number;
-    statusDistributionTop: number;
 }
 
 
