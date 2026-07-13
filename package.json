@@ -1,14 +1,48 @@
 {
-  "name": "api-usage-analyzer",
+  "name": "endpoint-analyzer",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "CLI tool for analyzing JSON API logs and generating interactive HTML reports.",
+  "license": "MIT",
+  "author": "M4xx7",
+
+  "bin": {
+    "endpoint-analyzer": "./dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+
+  "main": "./dist/index.js",
+
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
+
+  "keywords": [
+    "cli",
+    "logs",
+    "api",
+    "analytics",
+    "json",
+    "dashboard",
+    "performance"
+  ],
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/M4xx7/endpoint-analyzer.git"
+  },
+
+  "bugs": {
+    "url": "https://github.com/M4xx7/endpoint-analyzer/issues"
+  },
+
+  "homepage": "https://github.com/M4xx7/endpoint-analyzer#readme",
+
   "devDependencies": {
     "@types/node": "^26.1.0",
     "ts-node": "^10.9.2",

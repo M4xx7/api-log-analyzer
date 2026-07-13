@@ -1,23 +1,13 @@
+#!/usr/bin/env node
+
 import { processLogs } from "./analyzer";
 import { parseLogs } from "./parser";
 import { generateHtmlReport } from "./reporters/htmlRepoter";
 import * as fs from 'fs';
-import { Options } from "./types";
+import { ApiLog, Options } from "./types";
 import { DEFAULT_OPTION_VALUE, OPTION_VALUE_MAX, OPTION_VALUE_MIN } from "./constants";
 import path from "path";
 
-// TODO
-
-// DONE
-
-// bar charts size
-// check edge cases
-// create report folder
-// polish design
-// fix p95 and chart sorting
-// add option of choosing top 5, top 10 or etc for reports through console.
-// make appealing design for html report.
-// clean up code: remove duplicates, hardcodes parts etc: chart, index are left
 
 const file = process.argv[2];
 
@@ -32,10 +22,22 @@ const options: Options = {
   latencyTop: getOption(5, DEFAULT_OPTION_VALUE),
 }
 
-const logs = parseLogs(file);
+let logs: ApiLog[] = [];
+
+try {
+  logs = parseLogs(file);
+} catch (error: any) {
+  console.error(`\x1b[31mError reading file: ${error.message}\x1b[0m`);
+  process.exit(1);
+}
+
+if (logs.length === 0) {
+  console.error("\x1b[31mError: No valid JSON log entries found in the provided file.\x1b[0m");
+  process.exit(1);
+}
+
 const results = processLogs(logs);
 const htmlString = generateHtmlReport(results, options);
-
 const reportsDir = path.join(process.cwd(), "reports");
 
 if (!fs.existsSync(reportsDir)) {
@@ -43,9 +45,7 @@ if (!fs.existsSync(reportsDir)) {
 }
 
 const reportPath = path.join(reportsDir, `${path.parse(file).name}.html`);
-
 fs.writeFileSync(reportPath, htmlString);
-
 console.log('report generated successfully!');
 
 
@@ -61,7 +61,7 @@ function isValidOption(option: number): boolean {
 
 function printHelp() {
   console.log(`
-Usage: api-log-analyzer <log-file> [statusTop] [leastSucc] [latencyTop]
+Usage: endpoint-analyzer <log-file> [statusTop] [leastSucc] [latencyTop]
 
 Arguments:
   <log-file>    Path to the JSON log file you want to analyze (required)
