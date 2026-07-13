@@ -4,3 +4,7 @@ build/
 .env
 *.log
 reports/
+*.tgz
+logs.json
+logs.jsonl
+report.html
