@@ -4,24 +4,20 @@
   "description": "CLI tool for analyzing JSON API logs and generating interactive HTML reports.",
   "license": "MIT",
   "author": "M4xx7",
-
   "bin": {
     "endpoint-analyzer": "./dist/index.js"
   },
-
   "main": "./dist/index.js",
-
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
-
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "test": "vitest"
   },
-
   "keywords": [
     "cli",
     "logs",
@@ -31,21 +27,18 @@
     "dashboard",
     "performance"
   ],
-
   "repository": {
     "type": "git",
     "url": "https://github.com/M4xx7/endpoint-analyzer.git"
   },
-
   "bugs": {
     "url": "https://github.com/M4xx7/endpoint-analyzer/issues"
   },
-
   "homepage": "https://github.com/M4xx7/endpoint-analyzer#readme",
-
   "devDependencies": {
     "@types/node": "^26.1.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }
